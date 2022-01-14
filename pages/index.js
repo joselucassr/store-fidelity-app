@@ -11,8 +11,31 @@ import { BsTelephoneFill } from 'react-icons/bs';
 export default function Home() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [tempPhoneNumber, setTempPhoneNumber] = useState(phoneNumber);
+  const [pointsTotal, setPointsTotal] = useState(0);
   const qrCodeDivRef = useRef(null);
   const qrCodeRef = useRef(null);
+
+  //Fetch points
+  useEffect(() => {
+    if (localStorage.getItem('@store-fidelity/phoneNumber'))
+      setPointsTotal(localStorage.getItem('@store-fidelity/pointsTotal'));
+
+    if (phoneNumber)
+      try {
+        fetch('/api/get-points', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json; charset=utf-8' },
+          body: JSON.stringify({ phoneNumber: phoneNumber }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            setPointsTotal(data.points);
+            localStorage.setItem('@store-fidelity/pointsTotal', data.points);
+          });
+      } catch (error) {
+        console.log(error);
+      }
+  }, [phoneNumber]);
 
   // QR Code setup
   useEffect(() => {
@@ -159,11 +182,15 @@ export default function Home() {
           onClick={() => setIsConfigOpen(!isConfigOpen)}
           className='backdrop-blur-sm px-4 py-4 bg-sky-200/25 rounded-xl'
         >
-          <div className={`w-auto ${phoneNumber && 'invisible absolute'}`}>
+          <div
+            className={`w-auto ${
+              phoneNumber ? 'invisible absolute' : undefined
+            }`}
+          >
             <Image src={QRCodePlaceholder}></Image>
           </div>
 
-          <div className={!phoneNumber && 'invisible absolute'}>
+          <div className={!phoneNumber ? 'invisible absolute' : undefined}>
             <div ref={qrCodeDivRef} />
             <p className='text-center font-mont font-bold text-nicePink'>
               Toque para trocar de número
@@ -176,7 +203,7 @@ export default function Home() {
         <div className='basis-3/4 backdrop-blur-sm px-4 py-2 rounded-xl border-gradient flex flex-col '>
           <span className='text-xl text-gradient font-mont'>Pontos:</span>
           <p className='text-9xl text-center font-mont font-bold text-gradient my-auto'>
-            20
+            {pointsTotal}
           </p>
         </div>
 
