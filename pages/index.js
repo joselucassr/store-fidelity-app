@@ -1,44 +1,27 @@
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
+import NumberFormat from 'react-number-format';
 
 import _devQRCode from '../devAssets/gradientQR.png';
+import QRCodePlaceholder from '../images/QRCodePlaceholder.png';
 import AwardImage from '../images/award-solid.png';
 import WhatsappImage from '../images/whatsapp-brands.png';
-
-// const qrCode = new QRCodeStyling({
-//   width: 300,
-//   height: 300,
-//   image: '',
-//   dotsOptions: {
-//     gradient: {
-//       type: 'linear',
-//       rotation: 45,
-//       colorStops: [
-//         { offset: 0, color: '#ef709b' },
-//         { offset: 1, color: '#fa9372' },
-//       ],
-//     },
-//     type: 'classy',
-//   },
-//   imageOptions: {
-//     crossOrigin: 'anonymous',
-//     margin: 20,
-//   },
-//   cornersSquareOptions: {
-//     type: 'square',
-//   },
-//   cornersDotOptions: {
-//     type: 'square',
-//   },
-// });
+import { BsTelephoneFill } from 'react-icons/bs';
 
 export default function Home() {
-  const [windowHeight, setWindowHeight] = useState('100vh');
-  const [phoneNumber, setPhoneNumber] = useState('(61) 91234-5678');
-  const ref = useRef(null);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [tempPhoneNumber, setTempPhoneNumber] = useState(phoneNumber);
+  const qrCodeDivRef = useRef(null);
   const qrCodeRef = useRef(null);
 
+  // QR Code setup
   useEffect(() => {
+    let startPhoneNumber = localStorage.getItem('@store-fidelity/phoneNumber');
+    if (startPhoneNumber) {
+      setPhoneNumber(startPhoneNumber);
+      setTempPhoneNumber(startPhoneNumber);
+    } else startPhoneNumber = '(##) #####-####';
+
     const innerHeight = window.innerHeight;
     const innerWidth = window.innerWidth;
     const sizeRatio = 0.66;
@@ -78,16 +61,17 @@ export default function Home() {
         backgroundOptions: {
           color: 'none',
         },
-        data: phoneNumber,
+        data: startPhoneNumber,
       });
 
-      qrCodeRef.current.append(ref.current);
-      ref.current = null;
+      qrCodeRef.current.append(qrCodeDivRef.current);
+      qrCodeDivRef.current = null;
 
       // qrCodeRef.current = qrCode;
     });
   }, []);
 
+  // Update QR Code
   useEffect(() => {
     qrCodeRef.current &&
       qrCodeRef.current.update({
@@ -95,26 +79,101 @@ export default function Home() {
       });
   }, [phoneNumber]);
 
+  const [isPhoneValid, setIsPhoneValid] = useState(true);
+
+  // Update phone
+  const updatePhone = () => {
+    if (tempPhoneNumber.length !== 15) {
+      return setIsPhoneValid(false);
+    }
+
+    setPhoneNumber(tempPhoneNumber);
+    setIsConfigOpen(false);
+    setIsPhoneValid(true);
+
+    localStorage.setItem('@store-fidelity/phoneNumber', tempPhoneNumber);
+  };
+
+  const exitConfigCleanup = () => {
+    setTempPhoneNumber(phoneNumber);
+    setIsPhoneValid(true);
+  };
+
+  const [isConfigOpen, setIsConfigOpen] = useState(false);
+
   return (
     <div
       // style={{ minHeight: windowHeight }}
-      className='flex flex-col mx-auto w-screen max-w-sm'
+      className='flex flex-col w-screen max-w-sm'
     >
+      {/* Set Phone */}
       <div
-        onClick={() => setPhoneNumber('(61) 91234-1234')}
-        className='mx-auto px-4 my-4'
+        onClick={() => {
+          setIsConfigOpen(false);
+          exitConfigCleanup();
+        }}
+        className={`absolute z-10 bg-sky-900/50 w-screen h-screen backdrop-blur-sm ${
+          !isConfigOpen && 'invisible'
+        }`}
       >
-        <div className='backdrop-blur-sm px-4 py-4 bg-sky-200/25 rounded-xl'>
-          {/* <Image src={_devQRCode}></Image> */}
-          <div ref={ref} />
-          <p className='text-center font-mont font-bold text-nicePink'>
-            Toque para trocar de número
-          </p>
+        <div className='flex flex-col h-screen pt-36 gap-4 p-8'>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              updatePhone();
+            }}
+            className='contents'
+          >
+            <NumberFormat
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+              onChange={(e) => {
+                setIsPhoneValid(true);
+                setTempPhoneNumber(e.target.value);
+              }}
+              className={`text-center text-mont text-3xl rounded-md p-4 font-bold text-white backdrop-blur-sm bg-sky-200/20 ${
+                !isPhoneValid && 'border-4 border-red-600/70'
+              }`}
+              placeholder='(##) #####-####'
+              format='(##) #####-####'
+              mask=''
+              value={tempPhoneNumber}
+              min='15'
+            />
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+              type='submit'
+              className='bg-gradient text-center text-mont font-bold text-3xl rounded-md p-4 text-white hover:cursor-pointer'
+            >
+              <BsTelephoneFill className='inline' /> SALVAR
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div className='mx-auto px-4 my-4'>
+        <div
+          onClick={() => setIsConfigOpen(!isConfigOpen)}
+          className='backdrop-blur-sm px-4 py-4 bg-sky-200/25 rounded-xl'
+        >
+          <div className={`w-auto ${phoneNumber && 'invisible absolute'}`}>
+            <Image src={QRCodePlaceholder}></Image>
+          </div>
+
+          <div className={!phoneNumber && 'invisible absolute'}>
+            <div ref={qrCodeDivRef} />
+            <p className='text-center font-mont font-bold text-nicePink'>
+              Toque para trocar de número
+            </p>
+          </div>
         </div>
       </div>
 
       <div className='flex flex-row mx-4 gap-x-4'>
-        <div className='basis-3/4 backdrop-blur-sm px-4 py-2 rounded-xl btn-gradient-2 flex flex-col '>
+        <div className='basis-3/4 backdrop-blur-sm px-4 py-2 rounded-xl border-gradient flex flex-col '>
           <span className='text-xl text-gradient font-mont'>Pontos:</span>
           <p className='text-9xl text-center font-mont font-bold text-gradient my-auto'>
             20
