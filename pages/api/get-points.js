@@ -1,5 +1,4 @@
-import connectDB from '../../middleware/mongodb';
-import Customer from '../../Models/Customer';
+import { findOne } from '../../helper/mongoAPI';
 
 const handler = async (req, res) => {
   if (!req.method === 'POST')
@@ -10,12 +9,16 @@ const handler = async (req, res) => {
   if (!phoneNumber) return res.status(422).send('data_incomplete');
 
   try {
-    let customer = await Customer.findOne({ phoneNumber });
+    // Trying the mongo API
+    const resData = await findOne('customers', { phoneNumber: phoneNumber });
 
-    return res.status(200).send({ points: customer.pointsTotal });
+    if (resData === null) res.status(404).send({ msg: 'not found' });
+
+    return res.status(200).send({ points: resData.pointsTotal });
   } catch (error) {
+    console.log(error);
     return res.status(500).send(error.message);
   }
 };
 
-export default connectDB(handler);
+export default handler;

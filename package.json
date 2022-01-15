@@ -10,6 +10,7 @@
     "startLan": "next start -H 192.168.0.3"
   },
   "dependencies": {
+    "axios": "^0.24.0",
     "framer-motion": "^5.6.0",
     "html5-qrcode": "^2.1.6",
     "mongoose": "^6.1.6",

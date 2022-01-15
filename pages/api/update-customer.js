@@ -1,7 +1,8 @@
-import connectDB from '../../middleware/mongodb';
 import Customer from '../../Models/Customer';
 import Transaction from '../../Models/Transaction';
+
 import { runOp } from '../../helper/math';
+import { findOne, updateOne, insertOne } from '../../helper/mongoAPI';
 
 const handler = async (req, res) => {
   if (!req.method === 'POST')
@@ -14,37 +15,40 @@ const handler = async (req, res) => {
 
   try {
     // Create transaction
-    let transaction = new Transaction({
+    let transactionModel = new Transaction({
       phoneNumber,
       points,
       type: operation,
     });
-    await transaction.save();
+    await insertOne('transactions', transactionModel);
 
-    let customer = await Customer.findOne({ phoneNumber });
+    const customer = await findOne('customers', { phoneNumber: phoneNumber });
 
-    // Update customer
-    if (customer) {
-      customer = await Customer.findOneAndUpdate(
-        { phoneNumber },
-        {
-          $set: {
-            pointsTotal: runOp(customer.pointsTotal, operation, points),
-          },
-        },
-        { new: true },
-      );
-
-      return res.status(200).send(customer);
+    if (customer === null) {
+      let customerModel = new Customer({
+        phoneNumber,
+        pointsTotal: points,
+      });
+      await insertOne('customers', customerModel);
+      return res.status(201).send({ msg: 'cliente criado' });
     }
 
-    customer = new Customer({ phoneNumber, pointsTotal: points });
-    await customer.save();
+    await updateOne(
+      'customers',
+      {
+        phoneNumber: phoneNumber,
+      },
+      {
+        $set: {
+          pointsTotal: runOp(customer.pointsTotal, operation, points),
+        },
+      },
+    );
 
-    return res.status(200).send(customer);
+    return res.status(201).send({ msg: 'cliente atualizado' });
   } catch (error) {
     return res.status(500).send(error.message);
   }
 };
 
-export default connectDB(handler);
+export default handler;
