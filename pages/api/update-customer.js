@@ -1,6 +1,6 @@
 import connectDB from '../../middleware/mongodb';
-import Customer from '../../models/Customer';
-import Transaction from '../../models/Transaction';
+import Customer from '../../Models/Customer';
+import Transaction from '../../Models/Transaction';
 import { runOp } from '../../helper/math';
 
 const handler = async (req, res) => {

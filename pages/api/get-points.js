@@ -1,7 +1,5 @@
 import connectDB from '../../middleware/mongodb';
-import Customer from '../../models/Customer';
-import Transaction from '../../models/Transaction';
-import { runOp } from '../../helper/math';
+import Customer from '../../Models/Customer';
 
 const handler = async (req, res) => {
   if (!req.method === 'POST')
