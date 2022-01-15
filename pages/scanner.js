@@ -8,13 +8,7 @@ import { IoMdArrowRoundBack } from 'react-icons/io';
 import Link from 'next/link';
 import { useEffect } from 'react';
 
-export default function Home() {
-  const awards = [
-    { name: 'Tapioca de 5 Reais', pointAmount: '20' },
-    { name: 'Tapioca de 3 Reais', pointAmount: '15' },
-    { name: 'Lata de refrigerante', pointAmount: '10' },
-  ];
-
+export default function Scanner() {
   useEffect(() => {
     var resultContainer = document.getElementById('qr-reader-results');
     var lastResult,

@@ -6,7 +6,7 @@ import AwardImage from '../images/award-solid.png';
 import { IoMdArrowRoundBack } from 'react-icons/io';
 import Link from 'next/link';
 
-export default function Home() {
+export default function Awards() {
   const awards = [
     { name: 'Tapioca de 5 Reais', pointAmount: '20' },
     { name: 'Tapioca de 3 Reais', pointAmount: '15' },
