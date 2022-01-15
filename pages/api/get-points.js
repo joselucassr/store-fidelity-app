@@ -2,6 +2,7 @@ import connectDB from '../../middleware/mongodb';
 import Customer from '../../Models/Customer';
 
 const handler = async (req, res) => {
+  console.time('handler');
   console.log('START');
   if (!req.method === 'POST')
     return res.status(422).send('req_method_not_supported');
@@ -18,8 +19,10 @@ const handler = async (req, res) => {
   );
 
   try {
+    console.timeLog('handler');
     console.log('try {');
     let customer = await Customer.findOne({ phoneNumber });
+    console.timeLog('handler');
     console.log('let customer = await Customer.findOne({ phoneNumber });');
 
     console.log(
