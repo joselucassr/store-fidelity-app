@@ -1,14 +1,17 @@
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import NumberFormat from 'react-number-format';
+import { motion } from 'framer-motion';
 
 import _devQRCode from '../devAssets/gradientQR.png';
 import QRCodePlaceholder from '../images/QRCodePlaceholder.png';
 import AwardImage from '../images/award-solid.png';
 import WhatsappImage from '../images/whatsapp-brands.png';
 import { BsTelephoneFill } from 'react-icons/bs';
+import Link from 'next/link';
 
 export default function Home() {
+  const whatsappMsg = `Olá, desejo fazer um pedido.`;
   const [phoneNumber, setPhoneNumber] = useState('');
   const [tempPhoneNumber, setTempPhoneNumber] = useState(phoneNumber);
   const [pointsTotal, setPointsTotal] = useState(0);
@@ -127,55 +130,69 @@ export default function Home() {
   return (
     <div
       // style={{ minHeight: windowHeight }}
+      onContextMenu={(e) => e.preventDefault()}
       className='flex flex-col w-screen max-w-sm'
     >
       {/* Set Phone */}
-      <div
-        onClick={() => {
-          setIsConfigOpen(false);
-          exitConfigCleanup();
-        }}
-        className={`absolute z-10 bg-sky-900/50 w-screen h-screen backdrop-blur-sm ${
-          !isConfigOpen && 'invisible'
-        }`}
-      >
-        <div className='flex flex-col h-screen pt-36 gap-4 p-8'>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              updatePhone();
-            }}
-            className='contents'
-          >
-            <NumberFormat
-              onClick={(e) => {
-                e.stopPropagation();
+      {isConfigOpen && (
+        <motion.div
+          initial='hidden'
+          animate='visible'
+          variants={{
+            hidden: {
+              opacity: 0,
+            },
+            visible: {
+              opacity: 1,
+              transition: {
+                duration: 0.1,
+              },
+            },
+          }}
+          onClick={() => {
+            setIsConfigOpen(false);
+            exitConfigCleanup();
+          }}
+          className={`absolute z-10 bg-sky-900/50 w-screen h-screen backdrop-blur-sm`}
+        >
+          <div className='flex flex-col h-screen pt-36 gap-4 p-8'>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                updatePhone();
               }}
-              onChange={(e) => {
-                setIsPhoneValid(true);
-                setTempPhoneNumber(e.target.value);
-              }}
-              className={`text-center text-mont text-3xl rounded-md p-4 font-bold text-white backdrop-blur-sm bg-sky-200/20 ${
-                !isPhoneValid && 'border-4 border-red-600/70'
-              }`}
-              placeholder='(##) #####-####'
-              format='(##) #####-####'
-              mask=''
-              value={tempPhoneNumber}
-              min='15'
-            />
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
-              type='submit'
-              className='bg-gradient text-center text-mont font-bold text-3xl rounded-md p-4 text-white hover:cursor-pointer'
+              className='contents'
             >
-              <BsTelephoneFill className='inline' /> SALVAR
-            </button>
-          </form>
-        </div>
-      </div>
+              <NumberFormat
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+                onChange={(e) => {
+                  setIsPhoneValid(true);
+                  setTempPhoneNumber(e.target.value);
+                }}
+                className={`text-center text-mont text-3xl rounded-md p-4 font-bold text-white backdrop-blur-sm bg-sky-200/20 ${
+                  !isPhoneValid && 'border-4 border-red-600/70'
+                }`}
+                placeholder='(##) #####-####'
+                format='(##) #####-####'
+                mask=''
+                value={tempPhoneNumber}
+                min='15'
+              />
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+                type='submit'
+                className='bg-gradient text-center text-mont font-bold text-3xl rounded-md p-4 text-white hover:cursor-pointer'
+              >
+                <BsTelephoneFill className='inline' /> SALVAR
+              </button>
+            </form>
+          </div>
+        </motion.div>
+      )}
 
       <div className='mx-auto px-4 my-4'>
         <div
@@ -208,18 +225,25 @@ export default function Home() {
         </div>
 
         <div className='basis-1/4 backdrop-blur-sm px-4 py-4 bg-sky-200/25 rounded-xl text-sm text-center font-medium flex flex-col gap-y-4'>
-          <div className=''>
-            <div className='w-10 mx-auto'>
-              <Image src={WhatsappImage} />
+          <a
+            href={`https://wa.me/5561981485731?text=${encodeURI(whatsappMsg)}`}
+            target='_blank'
+          >
+            <div className=''>
+              <div className='w-10 mx-auto'>
+                <Image src={WhatsappImage} />
+              </div>
+              <p className='text-mont text-gradient'>Faça seu pedido</p>
             </div>
-            <p className='text-mont text-gradient'>Faça seu pedido</p>
-          </div>
-          <div className=''>
-            <div className='w-10 mx-auto'>
-              <Image src={AwardImage} />
+          </a>
+          <Link href='/recompensas'>
+            <div className=''>
+              <div className='w-10 mx-auto'>
+                <Image src={AwardImage} />
+              </div>
+              <p className='text-mont text-gradient'>Recompensas</p>
             </div>
-            <p className='text-mont text-gradient'>Recompensas</p>
-          </div>
+          </Link>
         </div>
       </div>
     </div>

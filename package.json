@@ -10,6 +10,8 @@
     "startLan": "next start -H 192.168.0.3"
   },
   "dependencies": {
+    "framer-motion": "^5.6.0",
+    "html5-qrcode": "^2.1.6",
     "mongoose": "^6.1.6",
     "next": "12.0.8",
     "next-pwa": "^5.4.4",
