@@ -44,10 +44,7 @@ export default function AdminMenu() {
   }, []);
 
   return (
-    <div
-      onContextMenu={(e) => e.preventDefault()}
-      className='flex flex-col gap-8 w-screen'
-    >
+    <div className='flex flex-col gap-8 w-screen'>
       {exitConfirmation && (
         <motion.div
           initial='hidden'
