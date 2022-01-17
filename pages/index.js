@@ -221,13 +221,13 @@ export default function Home() {
         <div className='basis-3/4 backdrop-blur-sm px-4 py-2 rounded-xl border-gradient flex flex-col '>
           <span className='text-xl text-gradient font-mont'>Pontos:</span>
           <p className='text-9xl text-center font-mont font-bold text-gradient my-auto'>
-            {pointTotal}
+            {pointTotal || '0'}
           </p>
         </div>
 
         <div className='basis-1/4 backdrop-blur-sm px-4 py-4 bg-sky-200/25 rounded-xl text-sm text-center font-medium flex flex-col gap-y-4'>
           <a
-            href={`https://wa.me/5561981485731?text=${encodeURI(whatsappMsg)}`}
+            href={`https://wa.me/5561983327290?text=${encodeURI(whatsappMsg)}`}
             target='_blank'
           >
             <div className=''>
