@@ -23,7 +23,7 @@ export default function Home() {
     if (localStorage.getItem('@store-fidelity/phoneNumber'))
       setPointTotal(localStorage.getItem('@store-fidelity/pointTotal'));
 
-    if (phoneNumber)
+    if (phoneNumber !== '' && phoneNumber !== undefined)
       try {
         fetch('/api/get-points', {
           method: 'POST',
