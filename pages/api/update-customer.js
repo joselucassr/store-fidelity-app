@@ -8,10 +8,12 @@ const handler = async (req, res) => {
   if (!req.method === 'POST')
     return res.status(422).send('req_method_not_supported');
 
-  const { phoneNumber, operation, points } = req.body;
+  const { phoneNumber, operation, points, loginToken } = req.body;
 
-  if (!phoneNumber || !operation || !points)
+  if (!phoneNumber || !operation || !points || !loginToken)
     return res.status(422).send('data_incomplete');
+
+  if (loginToken !== process.env.loginToken) return res.status(401).send({});
 
   try {
     // Create transaction

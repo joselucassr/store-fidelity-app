@@ -14,7 +14,7 @@ import {
   BsArrowRepeat,
 } from 'react-icons/bs';
 import { IoMdArrowRoundBack } from 'react-icons/io';
-import { set } from 'mongoose';
+import Link from 'next/link';
 
 export default function Scanner() {
   const [isPhoneValid, setIsPhoneValid] = useState(true);
@@ -65,25 +65,29 @@ export default function Scanner() {
 
   const submitForm = () => {
     setWaitingResultStage(1);
-    try {
-      fetch('/api/update-customer', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json; charset=utf-8' },
-        body: JSON.stringify({
-          phoneNumber: phoneNumber,
-          operation: opType,
-          points: pointAmount,
-        }),
+
+    fetch('/api/update-customer', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({
+        phoneNumber: phoneNumber,
+        operation: opType,
+        points: pointAmount,
+        loginToken: localStorage.getItem('@store-fidelity/loginToken'),
+      }),
+    })
+      .then((res) => {
+        if (res.status !== 200 && res.status !== 201) throw 'error';
+        return res.json();
       })
-        .then((res) => res.json())
-        .then(() => {
-          setWaitingResultStage(2);
-          setStage(4);
-        });
-    } catch (error) {
-      setWaitingResultStage(3);
-      console.log(error);
-    }
+      .then(() => {
+        setWaitingResultStage(2);
+        setStage(4);
+      })
+      .catch((error) => {
+        setWaitingResultStage(3);
+        console.log(error);
+      });
   };
 
   const resetFields = () => {
@@ -179,25 +183,82 @@ export default function Scanner() {
       {/* Data gathering */}
 
       {stage === 1 && (
-        <div className='flex flex-col gap-4'>
-          <div className='flex justify-between'>
-            <NumberFormat
-              onChange={(e) => {
-                setIsPhoneValid(true);
-                setPhoneNumber(e.target.value);
-              }}
-              className={`p-4 text-mont rounded-md font-bold backdrop-blur-sm bg-sky-200/20 ${
-                !isPhoneValid && 'border-4 border-red-600/70'
-              }`}
-              placeholder='(##) #####-####'
-              format='(##) #####-####'
-              mask=''
-              value={phoneNumber}
-              min='15'
-            />
+        <div className='flex flex-col gap-12'>
+          <div className='flex flex-col gap-4'>
+            <div className='flex justify-between'>
+              <NumberFormat
+                onChange={(e) => {
+                  setIsPhoneValid(true);
+                  setPhoneNumber(e.target.value);
+                }}
+                className={`p-4 text-mont rounded-md font-bold backdrop-blur-sm bg-sky-200/20 ${
+                  !isPhoneValid && 'border-4 border-red-600/70'
+                }`}
+                placeholder='(##) #####-####'
+                format='(##) #####-####'
+                mask=''
+                value={phoneNumber}
+                min='15'
+              />
 
+              <motion.div
+                onClick={() => setStage(2)}
+                initial='hidden'
+                animate='visible'
+                variants={{
+                  hidden: {
+                    scale: 0.8,
+                    opacity: 0,
+                  },
+                  visible: {
+                    scale: 1,
+                    opacity: 1,
+                    transition: {
+                      delay: 0.4,
+                    },
+                  },
+                }}
+                className='flex justify-center items-center gap-2 sticky bottom-4 font-mont font-normal text-2xl text-white p-4 bg-gradient rounded-xl'
+              >
+                <AiOutlineQrcode className='inline' />
+              </motion.div>
+            </div>
+            <input
+              onChange={(e) => {
+                setIsPointAmountValid(true);
+                setPointAmount(e.target.value);
+              }}
+              value={pointAmount}
+              type={'number'}
+              className={`p-4 text-mont rounded-md font-bold backdrop-blur-sm bg-sky-200/20 ${
+                !isPointAmountValid && 'border-4 border-red-600/70'
+              }`}
+              placeholder='Número de pontos'
+            />
+            <div className='flex justify-between'>
+              <button
+                onClick={() => checkForm('-')}
+                type='submit'
+                className='bg-red-200 text-center text-mont font-bold rounded-md p-4 text-red-900 hover:cursor-pointer'
+              >
+                <BsDashLg className='inline' /> Remover
+              </button>
+              <button
+                onClick={() => checkForm('+')}
+                type='submit'
+                className='bg-green-200 text-center text-mont font-bold rounded-md p-4 text-green-900 hover:cursor-pointer'
+              >
+                <BsPlusLg className='inline' /> Adicionar
+              </button>
+            </div>
+          </div>
+
+          <Link href='/vendas'>
             <motion.div
-              onClick={() => setStage(2)}
+              onClick={() => {
+                resetFields();
+                setStage(1);
+              }}
               initial='hidden'
               animate='visible'
               variants={{
@@ -213,39 +274,11 @@ export default function Scanner() {
                   },
                 },
               }}
-              className='flex justify-center items-center gap-2 sticky bottom-4 font-mont font-normal text-2xl text-white p-4 bg-gradient rounded-xl'
+              className='flex justify-center text-center items-center gap-2 sticky bottom-4 font-mont font-normal text-2xl text-sky-900/60 border-nicePink/60 backdrop-blur-sm bg-sky-200/20 border-2 p-4 rounded-xl'
             >
-              <AiOutlineQrcode className='inline' />
+              <IoMdArrowRoundBack className='inline' /> Painel de vendas
             </motion.div>
-          </div>
-          <input
-            onChange={(e) => {
-              setIsPointAmountValid(true);
-              setPointAmount(e.target.value);
-            }}
-            value={pointAmount}
-            type={'number'}
-            className={`p-4 text-mont rounded-md font-bold backdrop-blur-sm bg-sky-200/20 ${
-              !isPointAmountValid && 'border-4 border-red-600/70'
-            }`}
-            placeholder='Número de pontos'
-          />
-          <div className='flex justify-between'>
-            <button
-              onClick={() => checkForm('-')}
-              type='submit'
-              className='bg-red-200 text-center text-mont font-bold rounded-md p-4 text-red-900 hover:cursor-pointer'
-            >
-              <BsDashLg className='inline' /> Remover
-            </button>
-            <button
-              onClick={() => checkForm('+')}
-              type='submit'
-              className='bg-green-200 text-center text-mont font-bold rounded-md p-4 text-green-900 hover:cursor-pointer'
-            >
-              <BsPlusLg className='inline' /> Adicionar
-            </button>
-          </div>
+          </Link>
         </div>
       )}
       {/* QR Code Reader */}
@@ -395,7 +428,7 @@ export default function Scanner() {
                 },
               },
             }}
-            className='flex justify-center text-center items-center gap-2 sticky bottom-4 font-mont font-normal text-2xl text-sky-900 border-gradient border-2 p-4 rounded-xl'
+            className='flex justify-center text-center items-center gap-2 sticky bottom-4 font-mont font-normal text-2xl text-sky-900/60 border-nicePink/60 backdrop-blur-sm bg-sky-200/20 border-2 p-4 rounded-xl'
           >
             <IoMdArrowRoundBack className='inline' /> Escanear novo código
           </motion.div>
