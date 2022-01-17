@@ -26,6 +26,7 @@ export default function Scanner() {
   const [stage, setStage] = useState(1);
   const [waitingResultStage, setWaitingResultStage] = useState(0);
   const [waitText, setWaitText] = useState(1); // 1: Aguarde, coletando valores.; 2: data ; 3: Ocorreu um erro.
+  const [isLoadingReader, setIsLoadingReader] = useState(true);
   const qrCodeReader = useRef(null);
 
   const checkForm = (operation) => {
@@ -98,6 +99,8 @@ export default function Scanner() {
       if (qrCodeReader.current !== null) qrCodeReader.current.stop();
     } catch (error) {}
 
+    setIsLoadingReader(true);
+
     // This method will trigger user permissions
     Html5Qrcode.getCameras()
       .then((devices) => {
@@ -143,6 +146,10 @@ export default function Scanner() {
                 // console.log(`QR Code no longer in front of camera.`);
               },
             )
+            .then(() => {
+              console.log('started');
+              setIsLoadingReader(false);
+            })
             .catch((err) => {
               // Start failed, handle it. For example,
               console.log(`Unable to start scanning, error: ${err}`);
@@ -244,6 +251,17 @@ export default function Scanner() {
       {/* QR Code Reader */}
       {stage === 2 && (
         <div className='flex flex-col gap-8'>
+          {isLoadingReader && (
+            <div className='flex flex-col items-center gap-8 p-4 text-mont rounded-md backdrop-blur-sm bg-gradient text-white'>
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ repeat: Infinity, duration: 2 }}
+              >
+                <BsArrowRepeat className='text-8xl' />
+              </motion.div>
+              <div className='font-bold text-2xl text-center'>Aguarde</div>
+            </div>
+          )}
           <div id='reader'></div>
           <motion.div
             onClick={() => setStage(1)}
