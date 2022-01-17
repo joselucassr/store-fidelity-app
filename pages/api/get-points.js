@@ -10,9 +10,12 @@ const handler = async (req, res) => {
 
   try {
     // Trying the mongo API
+    console.log(phoneNumber);
     const resData = await findOne('customers', { phoneNumber: phoneNumber });
 
-    if (resData === null) res.status(404).send({ msg: 'not found' });
+    console.log(resData);
+
+    if (resData === null) return res.status(404).send({ msg: 'not found' });
 
     return res.status(200).send({ points: resData.pointsTotal });
   } catch (error) {

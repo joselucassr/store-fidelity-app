@@ -17,7 +17,7 @@ const handler = async (req, res) => {
     // Create transaction
     let transactionModel = new Transaction({
       phoneNumber,
-      points,
+      points: parseInt(points),
       type: operation,
     });
     await insertOne('transactions', transactionModel);
@@ -27,7 +27,7 @@ const handler = async (req, res) => {
     if (customer === null) {
       let customerModel = new Customer({
         phoneNumber,
-        pointsTotal: points,
+        pointsTotal: parseInt(points),
       });
       await insertOne('customers', customerModel);
       return res.status(201).send({ msg: 'cliente criado' });
@@ -40,7 +40,7 @@ const handler = async (req, res) => {
       },
       {
         $set: {
-          pointsTotal: runOp(customer.pointsTotal, operation, points),
+          pointsTotal: runOp(customer.pointsTotal, operation, parseInt(points)),
         },
       },
     );

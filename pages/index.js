@@ -14,14 +14,14 @@ export default function Home() {
   const whatsappMsg = `Olá, desejo fazer um pedido.`;
   const [phoneNumber, setPhoneNumber] = useState('');
   const [tempPhoneNumber, setTempPhoneNumber] = useState(phoneNumber);
-  const [pointsTotal, setPointsTotal] = useState(0);
+  const [pointTotal, setPointTotal] = useState(0);
   const qrCodeDivRef = useRef(null);
   const qrCodeRef = useRef(null);
 
   //Fetch points
   useEffect(() => {
     if (localStorage.getItem('@store-fidelity/phoneNumber'))
-      setPointsTotal(localStorage.getItem('@store-fidelity/pointsTotal'));
+      setPointTotal(localStorage.getItem('@store-fidelity/pointTotal'));
 
     if (phoneNumber)
       try {
@@ -32,8 +32,8 @@ export default function Home() {
         })
           .then((res) => res.json())
           .then((data) => {
-            setPointsTotal(data.points);
-            localStorage.setItem('@store-fidelity/pointsTotal', data.points);
+            setPointTotal(data.points);
+            localStorage.setItem('@store-fidelity/pointTotal', data.points);
           });
       } catch (error) {
         console.log(error);
@@ -62,8 +62,9 @@ export default function Home() {
       qrCodeRef.current = new QRCodeStyling({
         width: canvasSize,
         height: canvasSize,
-        image: '',
+        image: '/icon-192x192.png',
         dotsOptions: {
+          // color: '#000',
           gradient: {
             type: 'linear',
             rotation: 45,
@@ -220,7 +221,7 @@ export default function Home() {
         <div className='basis-3/4 backdrop-blur-sm px-4 py-2 rounded-xl border-gradient flex flex-col '>
           <span className='text-xl text-gradient font-mont'>Pontos:</span>
           <p className='text-9xl text-center font-mont font-bold text-gradient my-auto'>
-            {pointsTotal}
+            {pointTotal}
           </p>
         </div>
 
