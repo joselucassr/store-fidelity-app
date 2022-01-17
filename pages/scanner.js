@@ -113,7 +113,7 @@ export default function Scanner() {
 
           qrCodeReader.current
             .start(
-              cameraId, // retreived in the previous step.
+              { facingMode: 'environment' }, // retreived in the previous step.
               {
                 fps: 10, // sets the framerate to 10 frame per second
                 qrbox: innerWidth * 0.8,
