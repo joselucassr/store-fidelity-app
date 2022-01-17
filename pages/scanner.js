@@ -31,7 +31,7 @@ export default function Scanner() {
 
   const checkForm = (operation) => {
     if (phoneNumber.length !== 15) return setIsPhoneValid(false);
-    if (pointAmount <= 0) return setIsPointAmountValid(false);
+    if (pointAmount <= 0 || !pointAmount) return setIsPointAmountValid(false);
 
     if (operation === '+') setOpType('+');
     else setOpType('-');
