@@ -64,15 +64,15 @@ export default function Home() {
         height: canvasSize,
         image: '/icon-192x192.png',
         dotsOptions: {
-          // color: '#000',
-          gradient: {
-            type: 'linear',
-            rotation: 45,
-            colorStops: [
-              { offset: 0, color: '#ef709b' },
-              { offset: 1, color: '#fa9372' },
-            ],
-          },
+          color: '#703549',
+          // gradient: {
+          //   type: 'linear',
+          //   rotation: 45,
+          //   colorStops: [
+          //     { offset: 0, color: '#ef709b' },
+          //     { offset: 1, color: '#fa9372' },
+          //   ],
+          // },
           type: 'classy',
         },
         imageOptions: {

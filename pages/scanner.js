@@ -94,6 +94,9 @@ export default function Scanner() {
 
   useEffect(() => {
     const innerWidth = window.innerWidth;
+    try {
+      if (qrCodeReader.current !== null) qrCodeReader.current.stop();
+    } catch (error) {}
 
     // This method will trigger user permissions
     Html5Qrcode.getCameras()
@@ -149,7 +152,14 @@ export default function Scanner() {
       .catch((err) => {
         // handle err
       });
+
+    return function cleanup() {
+      try {
+        if (qrCodeReader.current !== null) qrCodeReader.current.stop();
+      } catch (error) {}
+    };
   }, [stage]);
+
   return (
     <div
       onContextMenu={(e) => e.preventDefault()}
